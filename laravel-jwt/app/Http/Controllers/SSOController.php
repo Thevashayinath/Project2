@@ -1,18 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class SSOController extends Controller
 {
-    public function index(Request $request)
+    public function dashboard(Request $request)
     {
         if (!$request->header('Authorization')) {
             return view('auth.login');
         }
 
-        $token = $request->header('Authorization');
+        $token = $request->bearerToken();
         $res = $this->validateToken($token);
         if (!$res) {
             return response()->json([
@@ -29,7 +30,7 @@ class SSOController extends Controller
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
-        ])->post('http://127.0.0.1:8000/api/getToken');
+        ])->post('http://127.0.0.1:8008/api/checkToken');
 
         if ($response->ok()) {
             // API request successful, handle response
@@ -37,6 +38,22 @@ class SSOController extends Controller
         } else {
             // API request failed, handle error
             return $response->json()['error'];
+        }
+    }
+    public function checkToken(Request $request)
+    {
+        if ($request->header('Authorization')) {
+            $token = $request->bearerToken();
+            $user = User::where('remember_token', $token)->first();
+            if ($user){
+                return response()->json("success");
+            }
+            else{
+                return response()->json("error");
+            }
+        }
+        else{
+            return response()->json("error");
         }
     }
 }

@@ -16,5 +16,6 @@ use App\Http\Controllers\SSOController;
 */
 
 Route::controller(SSOController::class)->group(function () {
-    Route::post('dashboard', 'index')->name('dashboard');
+    Route::post('dashboard', 'dashboard');
+    Route::post('checkToken', 'checkToken');
 });
