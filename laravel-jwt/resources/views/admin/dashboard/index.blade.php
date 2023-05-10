@@ -22,6 +22,7 @@
                 'Authorization': 'Bearer ' + '{{ csrf_token() }}'
             },
             success: function(response) {
+                window.location.href = response.newUrl;
             },
             error: function(xhr) {
             }

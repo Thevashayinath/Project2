@@ -14,14 +14,20 @@ class SSOController extends Controller
         }
 
         $token = $request->bearerToken();
-        $res = $this->validateToken($token);
-        if (!$res) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized',
-            ], 401);
-        } else {
-            return view('admin.dashboard.index');
+//        $res = $this->validateToken($token);
+//        if (!$res) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Unauthorized',
+//            ], 401);
+//        } else {
+//            return view('admin.dashboard.index');
+//        }
+        if($token){
+            session(['_token' => $token]);
+            return redirect()->route('dashboard');
+        }else{
+            return view('auth.login');
         }
 
     }
@@ -30,7 +36,7 @@ class SSOController extends Controller
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
-        ])->post('http://127.0.0.1:8008/api/checkToken');
+        ])->post('http://127.0.0.1:8001/api/checkToken');
 
         if ($response->ok()) {
             // API request successful, handle response
